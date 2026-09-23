@@ -29,6 +29,37 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- ========== TRACKING (Replace with your real IDs) ========== -->
+    <!-- Google Analytics 4 - Replace G-XXXXXXXXXX with your Measurement ID -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
+
+    <!-- Facebook Pixel - Replace YOUR_PIXEL_ID with your Pixel ID -->
+    <!--
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', 'YOUR_PIXEL_ID');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"
+    /></noscript>
+    -->
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -807,6 +838,162 @@
             color: var(--border-color);
         }
 
+        /* ================= TOAST NOTIFICATIONS ================= */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+            width: calc(100% - 40px);
+        }
+
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--text-color);
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: toastIn 0.35s ease forwards;
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        .toast.success { border-left-color: var(--success-color); }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.info { border-left-color: var(--accent-color); }
+
+        .toast i { font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+        .toast.success i { color: var(--success-color); }
+        .toast.error i { color: #ef4444; }
+        .toast.info i { color: var(--accent-color); }
+
+        .toast-content { flex: 1; }
+        .toast-content strong { display: block; margin-bottom: 2px; font-size: 14px; }
+        .toast-content span { color: var(--text-muted); font-size: 13px; }
+
+        .toast.hiding {
+            animation: toastOut 0.3s ease forwards;
+        }
+
+        @keyframes toastIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateX(40px); }
+        }
+
+        /* Confirmation Modal */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.25s;
+        }
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .confirm-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: 0.25s;
+        }
+        .confirm-overlay.show .confirm-box {
+            transform: scale(1);
+        }
+        .confirm-box i {
+            font-size: 42px;
+            color: var(--success-color);
+            margin-bottom: 14px;
+        }
+        .confirm-box h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .confirm-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .confirm-actions .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 11px 16px;
+            font-size: 14px;
+        }
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        .btn-cancel:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #334155;
+        }
+
+        /* Privacy & Terms content */
+        .legal-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 32px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+        .legal-content h3 {
+            color: var(--text-color);
+            font-size: 18px;
+            margin: 22px 0 10px;
+        }
+        .legal-content h3:first-child { margin-top: 0; }
+        .legal-content ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .legal-content li { margin-bottom: 6px; }
+
+        /* Metrics proof image */
+        .proof-image {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 20px;
+            display: block;
+        }
+
         /* ================= MOBILE ================= */
         @media (max-width: 768px) {
             .hero h1 {
@@ -1067,6 +1254,8 @@
                     <li><i class="fas fa-check-circle"></i> Safe for Google Analytics & AdSense</li>
                     <li><i class="fas fa-check-circle"></i> Delivery usually starts within 1–2 hours</li>
                 </ul>
+                <p style="margin-top:16px;font-size:13px;color:var(--text-muted);">Real traffic proof (sample metrics):</p>
+                <img src="https://i.ibb.co/xq0mY01h/IMG-20260923-170708.jpg" alt="Real Human Clicks Metrics Proof - 2066 Human Clicks" class="proof-image" onerror="this.style.display='none'">
             </div>
         </div>
     </section>
@@ -1084,7 +1273,7 @@
         <!-- Submit Review Form -->
         <div class="review-form-box">
             <h3>Share Your Experience</h3>
-            <p>Your review will appear here after submission and also be sent to us for verification.</p>
+            <p>Your review will appear instantly on this page and is stored securely. You can also notify us on WhatsApp.</p>
 
             <div class="form-group">
                 <label for="reviewName">Your Name</label>
@@ -1254,6 +1443,76 @@
         </div>
     </section>
 
+    <!-- ================= PRIVACY POLICY ================= -->
+    <section class="section" id="privacy">
+        <h2 class="section-title">Privacy Policy</h2>
+        <p class="section-subtitle">How we collect, use and protect your information</p>
+        <div class="legal-content">
+            <h3>1. Information We Collect</h3>
+            <p>When you place an order or submit a review, we may collect your name, website URL, contact details (via WhatsApp), and any message you send us. We do not store payment card details on our website.</p>
+
+            <h3>2. How We Use Your Information</h3>
+            <ul>
+                <li>To process and deliver your traffic order</li>
+                <li>To communicate with you about your order via WhatsApp</li>
+                <li>To display client reviews on this website (with your permission)</li>
+                <li>To improve our services</li>
+            </ul>
+
+            <h3>3. Data Storage & Security</h3>
+            <p>Reviews are stored in Firebase Realtime Database. Order details are handled privately through WhatsApp. We take reasonable measures to protect your data, but no method of transmission over the internet is 100% secure.</p>
+
+            <h3>4. Third-Party Services</h3>
+            <p>We use WhatsApp for communication and may use Google Analytics / Facebook Pixel for website analytics (if enabled). These services have their own privacy policies.</p>
+
+            <h3>5. Your Rights</h3>
+            <p>You can request deletion of your review or contact data by messaging us on WhatsApp. We will respond within a reasonable time.</p>
+
+            <h3>6. Contact</h3>
+            <p>For any privacy-related questions: WhatsApp +880 1307-352309 or email sumonislam307352309@gmail.com</p>
+
+            <p style="margin-top:20px;font-size:13px;">Last updated: September 2026</p>
+        </div>
+    </section>
+
+    <!-- ================= TERMS OF SERVICE ================= -->
+    <section class="section" id="terms" style="padding-top:0;">
+        <h2 class="section-title">Terms of Service</h2>
+        <p class="section-subtitle">Please read these terms carefully before ordering</p>
+        <div class="legal-content">
+            <h3>1. Service Description</h3>
+            <p>Smart Website Traffic provides real human website traffic from global users. Traffic is delivered gradually to maintain a natural pattern.</p>
+
+            <h3>2. Orders & Payment</h3>
+            <ul>
+                <li>Minimum order: 1,000 visitors</li>
+                <li>Prices are as displayed on the order form ($10–$12 per 1,000 visitors depending on region quality)</li>
+                <li>Payment is completed after order confirmation via WhatsApp (bKash, Nagad, Rocket, Bank, Crypto etc.)</li>
+                <li>Orders start delivery usually within 1–2 hours after payment confirmation</li>
+            </ul>
+
+            <h3>3. Guarantee & Refills</h3>
+            <p>If the delivered volume falls short of the ordered amount, we provide a free refill. In rare cases of complete non-delivery we offer a full refund. Refill/refund requests must be made within 7 days of order completion.</p>
+
+            <h3>4. Acceptable Use</h3>
+            <p>You agree not to use our traffic for any illegal activity, fraud, or to violate the terms of Google, AdSense, or any third-party platform. We are not responsible for any account suspensions resulting from misuse.</p>
+
+            <h3>5. No Guarantee of Ranking or Revenue</h3>
+            <p>Traffic delivery does not guarantee higher Google rankings, more sales, or AdSense approval. Results depend on many factors including your website quality and content.</p>
+
+            <h3>6. Limitation of Liability</h3>
+            <p>Our liability is limited to the amount paid for the specific order. We are not liable for any indirect or consequential damages.</p>
+
+            <h3>7. Changes to Terms</h3>
+            <p>We may update these terms from time to time. Continued use of the service after changes means you accept the new terms.</p>
+
+            <h3>8. Contact</h3>
+            <p>Questions about these terms? Contact us on WhatsApp +880 1307-352309</p>
+
+            <p style="margin-top:20px;font-size:13px;">Last updated: September 2026</p>
+        </div>
+    </section>
+
     <!-- ================= FOOTER ================= -->
     <footer id="contact">
         <div class="footer-grid">
@@ -1283,6 +1542,8 @@
                 <a href="#order">Order Traffic</a>
                 <a href="#faq">FAQ</a>
                 <a href="#testimonials">Reviews</a>
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
             </div>
 
             <div class="footer-col footer-contact">
@@ -1346,6 +1607,73 @@
             priceElement.innerText = total.toFixed(2);
         }
 
+        // ========== TOAST NOTIFICATION ==========
+        function showToast(title, message, type = 'info', duration = 4000) {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="${icons[type] || icons.info}"></i>
+                <div class="toast-content">
+                    <strong>${title}</strong>
+                    <span>${message}</span>
+                </div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ========== CONFIRMATION MODAL ==========
+        function showConfirm(title, message, onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-overlay';
+            overlay.innerHTML = `
+                <div class="confirm-box">
+                    <i class="fab fa-whatsapp"></i>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <div class="confirm-actions">
+                        <button class="btn btn-cancel" id="confirmCancel">Cancel</button>
+                        <button class="btn btn-whatsapp" id="confirmOk">
+                            <i class="fab fa-whatsapp"></i> Open WhatsApp
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            setTimeout(() => overlay.classList.add('show'), 10);
+
+            const close = () => {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.remove(), 250);
+            };
+
+            overlay.querySelector('#confirmCancel').onclick = close;
+            overlay.querySelector('#confirmOk').onclick = () => {
+                close();
+                onConfirm();
+            };
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) close();
+            });
+        }
+
         // ========== WhatsApp Order ==========
         function submitOrder() {
             const url = document.getElementById("url").value.trim();
@@ -1355,13 +1683,13 @@
             const region = countrySelect.options[countrySelect.selectedIndex].text;
 
             if (!url) {
-                alert("Please enter your website URL!");
+                showToast('Missing URL', 'Please enter your website URL.', 'error');
                 document.getElementById("url").focus();
                 return;
             }
 
             if (!visitors || Number(visitors) < 1000) {
-                alert("Minimum order is 1,000 visitors.");
+                showToast('Minimum Order', 'Minimum order is 1,000 visitors.', 'error');
                 return;
             }
 
@@ -1377,7 +1705,15 @@ I want to place an order:
 Please confirm and share payment details.`;
 
             const whatsappURL = "https://wa.me/8801307352309?text=" + encodeURIComponent(message);
-            window.open(whatsappURL, "_blank");
+
+            showConfirm(
+                'Confirm Your Order',
+                `You are about to order <strong>${visitors}</strong> visitors for <strong>$${price} USD</strong>. This will open WhatsApp with your order details.`,
+                () => {
+                    showToast('Opening WhatsApp...', 'Your order message is ready. Complete payment after confirmation.', 'success', 3000);
+                    window.open(whatsappURL, "_blank");
+                }
+            );
         }
 
         // ========== FAQ Accordion ==========
@@ -1397,7 +1733,8 @@ Please confirm and share payment details.`;
             }
         }
 
-        // ========== REVIEW SYSTEM (User Submitted + localStorage) ==========
+        // ========== REVIEW SYSTEM (Firebase Realtime Database) ==========
+        const FIREBASE_REVIEWS_URL = 'https://smart-website-traffic-default-rtdb.firebaseio.com/reviews.json';
         let selectedRating = 0;
 
         // Star rating interaction
@@ -1425,12 +1762,16 @@ Please confirm and share payment details.`;
             });
         }
 
-        // Load reviews from localStorage
-        function loadReviews() {
-            const container = document.getElementById('reviewsContainer');
-            const reviews = JSON.parse(localStorage.getItem('swt_reviews') || '[]');
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-            if (reviews.length === 0) {
+        function renderReviews(reviews) {
+            const container = document.getElementById('reviewsContainer');
+
+            if (!reviews || reviews.length === 0) {
                 container.innerHTML = `
                     <div class="no-reviews">
                         <i class="far fa-comments"></i>
@@ -1440,12 +1781,12 @@ Please confirm and share payment details.`;
                 return;
             }
 
-            // Show newest first
+            // Newest first
             const sorted = reviews.slice().reverse();
 
             container.innerHTML = sorted.map(r => {
-                const initials = r.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                const initials = (r.name || 'A').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
                 return `
                     <div class="testimonial-card">
                         <div class="testimonial-header">
@@ -1462,50 +1803,118 @@ Please confirm and share payment details.`;
             }).join('');
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // Load reviews from Firebase
+        async function loadReviews() {
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = `<div class="no-reviews"><i class="fas fa-spinner fa-spin"></i><p>Loading reviews...</p></div>`;
+
+            try {
+                const res = await fetch(FIREBASE_REVIEWS_URL);
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+
+                let reviews = [];
+                if (data) {
+                    // Firebase returns object with keys, convert to array
+                    reviews = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                    // Sort by date if available
+                    reviews.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+                }
+                renderReviews(reviews);
+            } catch (err) {
+                console.error('Firebase load error:', err);
+                // Fallback to localStorage
+                const local = JSON.parse(localStorage.getItem('swt_reviews') || '[]');
+                renderReviews(local);
+                if (local.length === 0) {
+                    showToast('Reviews', 'Could not load live reviews. Showing local data if any.', 'info', 3000);
+                }
+            }
         }
 
-        // Submit Review
-        function submitReview() {
+        // Submit Review → Firebase + show on page + WhatsApp
+        async function submitReview() {
             const name = document.getElementById('reviewName').value.trim();
             const role = document.getElementById('reviewRole').value.trim();
             const text = document.getElementById('reviewText').value.trim();
 
             if (!name) {
-                alert('Please enter your name.');
+                showToast('Name required', 'Please enter your name.', 'error');
                 document.getElementById('reviewName').focus();
                 return;
             }
 
             if (selectedRating === 0) {
-                alert('Please select a rating.');
+                showToast('Rating required', 'Please select a star rating.', 'error');
                 return;
             }
 
             if (!text || text.length < 10) {
-                alert('Please write a review (at least 10 characters).');
+                showToast('Review too short', 'Please write at least 10 characters.', 'error');
                 document.getElementById('reviewText').focus();
                 return;
             }
 
-            // Save to localStorage
-            const reviews = JSON.parse(localStorage.getItem('swt_reviews') || '[]');
-            reviews.push({
+            const reviewData = {
                 name: name,
                 role: role,
                 rating: selectedRating,
                 text: text,
                 date: new Date().toISOString()
-            });
-            localStorage.setItem('swt_reviews', JSON.stringify(reviews));
+            };
 
-            // Reload reviews on page
-            loadReviews();
+            // Optimistic UI: show immediately
+            const container = document.getElementById('reviewsContainer');
+            const currentHtml = container.innerHTML;
+            const tempReviews = [reviewData];
+            // Try to keep existing if any
+            try {
+                const existing = Array.from(container.querySelectorAll('.testimonial-card')).length;
+                if (existing === 0) renderReviews([reviewData]);
+                else {
+                    // Prepend new one
+                    const initials = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                    const stars = '★'.repeat(selectedRating) + '☆'.repeat(5 - selectedRating);
+                    const newCard = `
+                        <div class="testimonial-card" style="border-color: var(--success-color);">
+                            <div class="testimonial-header">
+                                <div class="testimonial-avatar">${initials}</div>
+                                <div class="testimonial-info">
+                                    <h4>${escapeHtml(name)}</h4>
+                                    <span>${escapeHtml(role || 'Client')}</span>
+                                </div>
+                            </div>
+                            <div class="stars">${stars}</div>
+                            <p>"${escapeHtml(text)}"</p>
+                        </div>
+                    `;
+                    if (container.querySelector('.no-reviews')) {
+                        container.innerHTML = newCard;
+                    } else {
+                        container.insertAdjacentHTML('afterbegin', newCard);
+                    }
+                }
+            } catch(e) {}
 
-            // Also send to WhatsApp so owner can see & verify
+            // Save to Firebase
+            try {
+                const res = await fetch(FIREBASE_REVIEWS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reviewData)
+                });
+                if (!res.ok) throw new Error('Failed to save');
+                showToast('Review Submitted!', 'Your review is now live on the page. Thank you!', 'success');
+            } catch (err) {
+                console.error(err);
+                // Fallback localStorage
+                const reviews = JSON.parse(localStorage.getItem('swt_reviews') || '[]');
+                reviews.push(reviewData);
+                localStorage.setItem('swt_reviews', JSON.stringify(reviews));
+                showToast('Saved locally', 'Could not reach server. Review saved on this device.', 'info');
+            }
+
+            // Also send to WhatsApp for owner verification
             const stars = '★'.repeat(selectedRating) + '☆'.repeat(5 - selectedRating);
             const message = `🌟 New Client Review - Smart Website Traffic
 
@@ -1517,7 +1926,14 @@ Please confirm and share payment details.`;
 ${text}`;
 
             const whatsappURL = "https://wa.me/8801307352309?text=" + encodeURIComponent(message);
-            window.open(whatsappURL, "_blank");
+
+            showConfirm(
+                'Review Submitted!',
+                'Your review is now visible on the website. Would you also like to notify us on WhatsApp?',
+                () => {
+                    window.open(whatsappURL, "_blank");
+                }
+            );
 
             // Reset form
             document.getElementById('reviewName').value = '';
@@ -1526,13 +1942,138 @@ ${text}`;
             selectedRating = 0;
             updateStars();
 
-            alert('Thank you! Your review has been submitted and will appear below. It has also been sent to us.');
+            // Reload from Firebase after a short delay to sync
+            setTimeout(loadReviews, 1500);
         }
+
+        // ========== VISITOR ANALYTICS TRACKER ==========
+        const FIREBASE_VISITS_URL = 'https://smart-website-traffic-default-rtdb.firebaseio.com/visits.json';
+        const FIREBASE_CLICKS_URL = 'https://smart-website-traffic-default-rtdb.firebaseio.com/clicks.json';
+
+        function getVisitorId() {
+            let id = localStorage.getItem('swt_vid');
+            if (!id) {
+                id = 'v_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 8);
+                localStorage.setItem('swt_vid', id);
+            }
+            return id;
+        }
+
+        async function getGeoInfo() {
+            try {
+                // Free IP geolocation (no key needed for basic use)
+                const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+                if (!res.ok) throw new Error('geo fail');
+                const data = await res.json();
+                return {
+                    country: data.country_name || data.country || 'Unknown',
+                    countryCode: data.country_code || '',
+                    city: data.city || '',
+                    region: data.region || '',
+                    ip: data.ip || ''
+                };
+            } catch (e) {
+                try {
+                    // Fallback
+                    const res2 = await fetch('https://ip-api.com/json/?fields=status,country,countryCode,city,regionName,query');
+                    const d = await res2.json();
+                    if (d.status === 'success') {
+                        return {
+                            country: d.country || 'Unknown',
+                            countryCode: d.countryCode || '',
+                            city: d.city || '',
+                            region: d.regionName || '',
+                            ip: d.query || ''
+                        };
+                    }
+                } catch (e2) {}
+                return { country: 'Unknown', countryCode: '', city: '', region: '', ip: '' };
+            }
+        }
+
+        async function trackVisit() {
+            // Avoid tracking the same session multiple times in short period
+            const last = sessionStorage.getItem('swt_tracked');
+            if (last && (Date.now() - Number(last)) < 30000) return; // 30s cooldown
+            sessionStorage.setItem('swt_tracked', Date.now());
+
+            const visitorId = getVisitorId();
+            const geo = await getGeoInfo();
+
+            const payload = {
+                visitorId,
+                country: geo.country,
+                countryCode: geo.countryCode,
+                city: geo.city,
+                region: geo.region,
+                ip: geo.ip,
+                userAgent: navigator.userAgent.substring(0, 180),
+                referrer: document.referrer || 'direct',
+                page: location.pathname || '/',
+                screen: `${screen.width}x${screen.height}`,
+                language: navigator.language || '',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await fetch(FIREBASE_VISITS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {
+                console.log('Visit track skipped');
+            }
+        }
+
+        async function trackClick(type) {
+            const visitorId = getVisitorId();
+            let country = 'Unknown';
+            try {
+                const geo = await getGeoInfo();
+                country = geo.country;
+            } catch(e) {}
+
+            const payload = {
+                visitorId,
+                type, // 'order' | 'whatsapp' | 'review' | 'nav'
+                country,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await fetch(FIREBASE_CLICKS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+        }
+
+        // Hook into existing buttons
+        const originalSubmitOrder = window.submitOrder;
+        window.submitOrder = function() {
+            trackClick('order');
+            if (originalSubmitOrder) originalSubmitOrder();
+        };
+
+        const originalSubmitReview = window.submitReview;
+        window.submitReview = function() {
+            trackClick('review');
+            if (originalSubmitReview) originalSubmitReview();
+        };
+
+        // Track WhatsApp links
+        document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+            a.addEventListener('click', () => trackClick('whatsapp'));
+        });
 
         // Initial load
         document.addEventListener("DOMContentLoaded", function () {
             calculatePrice();
             loadReviews();
+            // Track visit after short delay so page is ready
+            setTimeout(trackVisit, 1200);
         });
     </script>
 
