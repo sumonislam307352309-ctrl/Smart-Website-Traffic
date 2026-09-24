@@ -1960,35 +1960,230 @@ ${text}`;
         }
 
         async function getGeoInfo() {
-            try {
-                // Free IP geolocation (no key needed for basic use)
-                const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
-                if (!res.ok) throw new Error('geo fail');
-                const data = await res.json();
-                return {
-                    country: data.country_name || data.country || 'Unknown',
-                    countryCode: data.country_code || '',
-                    city: data.city || '',
-                    region: data.region || '',
-                    ip: data.ip || ''
-                };
-            } catch (e) {
+            // Multiple free Geo APIs - tries one by one until success
+            const apis = [
+                // 1. ipapi.co
+                async () => {
+                    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
+                    if (!res.ok) throw new Error();
+                    const d = await res.json();
+                    if (!d.country_name && !d.country) throw new Error();
+                    return {
+                        country: d.country_name || d.country,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 2. ip-api.com
+                async () => {
+                    const res = await fetch('https://ip-api.com/json/?fields=status,country,countryCode,city,regionName,query', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (d.status !== 'success' || !d.country) throw new Error();
+                    return {
+                        country: d.country,
+                        countryCode: d.countryCode || '',
+                        city: d.city || '',
+                        region: d.regionName || '',
+                        ip: d.query || ''
+                    };
+                },
+                // 3. ipwho.is
+                async () => {
+                    const res = await fetch('https://ipwho.is/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.success || !d.country) throw new Error();
+                    return {
+                        country: d.country,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 4. geojs.io
+                async () => {
+                    const res = await fetch('https://get.geojs.io/v1/ip/geo.json', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country) throw new Error();
+                    return {
+                        country: d.country,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 5. freeipapi.com
+                async () => {
+                    const res = await fetch('https://freeipapi.com/api/json/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.countryName) throw new Error();
+                    return {
+                        country: d.countryName,
+                        countryCode: d.countryCode || '',
+                        city: d.cityName || '',
+                        region: d.regionName || '',
+                        ip: d.ipAddress || ''
+                    };
+                },
+                // 6. ip.sb
+                async () => {
+                    const res = await fetch('https://api.ip.sb/geoip', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country) throw new Error();
+                    return {
+                        country: d.country,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 7. reallyfreegeoip
+                async () => {
+                    const res = await fetch('https://reallyfreegeoip.org/json/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country_name) throw new Error();
+                    return {
+                        country: d.country_name,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region_name || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 8. country.is
+                async () => {
+                    const res = await fetch('https://api.country.is/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country) throw new Error();
+                    // country.is only gives country code, map common ones
+                    const codeToName = {
+                        'BD': 'Bangladesh', 'US': 'United States', 'IN': 'India', 'GB': 'United Kingdom',
+                        'PK': 'Pakistan', 'SA': 'Saudi Arabia', 'AE': 'United Arab Emirates', 'MY': 'Malaysia',
+                        'SG': 'Singapore', 'CA': 'Canada', 'AU': 'Australia', 'DE': 'Germany', 'FR': 'France',
+                        'NP': 'Nepal', 'LK': 'Sri Lanka', 'ID': 'Indonesia', 'PH': 'Philippines', 'TR': 'Turkey'
+                    };
+                    return {
+                        country: codeToName[d.country] || d.country,
+                        countryCode: d.country || '',
+                        city: '',
+                        region: '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 9. ipwhois.app
+                async () => {
+                    const res = await fetch('https://ipwhois.app/json/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (d.success === false || !d.country) throw new Error();
+                    return {
+                        country: d.country,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 10. geoiplookup.io
+                async () => {
+                    const res = await fetch('https://json.geoiplookup.io/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country_name) throw new Error();
+                    return {
+                        country: d.country_name,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 11. db-ip.com free
+                async () => {
+                    const res = await fetch('https://api.db-ip.com/v2/free/self', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.countryName) throw new Error();
+                    return {
+                        country: d.countryName,
+                        countryCode: d.countryCode || '',
+                        city: d.city || '',
+                        region: d.stateProv || '',
+                        ip: d.ipAddress || ''
+                    };
+                },
+                // 12. ipapi.com (different service)
+                async () => {
+                    const res = await fetch('https://ipapi.com/ip_api.php?ip=', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country_name) throw new Error();
+                    return {
+                        country: d.country_name,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region_name || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 13. ipinfo.io (limited free)
+                async () => {
+                    const res = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country) throw new Error();
+                    const codeToName = {
+                        'BD': 'Bangladesh', 'US': 'United States', 'IN': 'India', 'GB': 'United Kingdom',
+                        'PK': 'Pakistan', 'SA': 'Saudi Arabia', 'AE': 'United Arab Emirates', 'MY': 'Malaysia'
+                    };
+                    return {
+                        country: codeToName[d.country] || d.country,
+                        countryCode: d.country || '',
+                        city: d.city || '',
+                        region: d.region || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 14. freegeoip.app
+                async () => {
+                    const res = await fetch('https://freegeoip.app/json/', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country_name) throw new Error();
+                    return {
+                        country: d.country_name,
+                        countryCode: d.country_code || '',
+                        city: d.city || '',
+                        region: d.region_name || '',
+                        ip: d.ip || ''
+                    };
+                },
+                // 15. ipgeolocation.io demo (may be limited)
+                async () => {
+                    const res = await fetch('https://api.ipgeolocation.io/ipgeo?apiKey=free', { signal: AbortSignal.timeout(3500) });
+                    const d = await res.json();
+                    if (!d.country_name) throw new Error();
+                    return {
+                        country: d.country_name,
+                        countryCode: d.country_code2 || '',
+                        city: d.city || '',
+                        region: d.state_prov || '',
+                        ip: d.ip || ''
+                    };
+                }
+            ];
+
+            for (const api of apis) {
                 try {
-                    // Fallback
-                    const res2 = await fetch('https://ip-api.com/json/?fields=status,country,countryCode,city,regionName,query');
-                    const d = await res2.json();
-                    if (d.status === 'success') {
-                        return {
-                            country: d.country || 'Unknown',
-                            countryCode: d.countryCode || '',
-                            city: d.city || '',
-                            region: d.regionName || '',
-                            ip: d.query || ''
-                        };
+                    const result = await api();
+                    if (result && result.country && result.country !== 'Unknown') {
+                        return result;
                     }
-                } catch (e2) {}
-                return { country: 'Unknown', countryCode: '', city: '', region: '', ip: '' };
+                } catch (e) {
+                    // try next API
+                }
             }
+
+            // Final fallback
+            return { country: 'Unknown', countryCode: '', city: '', region: '', ip: '' };
         }
 
         async function trackVisit() {
